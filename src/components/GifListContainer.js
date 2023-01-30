@@ -1,34 +1,36 @@
-import React, { useState } from "react";
-import GifSearch from "./GifSearch";
+import React, { useEffect, useState }  from "react";
 import GifList from "./GifList";
+import GifSearch from "./GifSearch";
 
-function GifListContainer() {
-  const [gifs, setGifs] = useState([]);
+function GifListContainer(){
+const [data,setData]=useState([])   
+const [query, setQuery] = useState("dolphins");
 
-  function handleSubmit(userValue) {
-    fetch(
-      `https://api.giphy.com/v1/gifs/search?q=${userValue}&api_key=HxCosTgymS2QaHVjIchgMKMlUbjyNfXj&rating=g`
+useEffect(()=>{
+ 
+    let key='1sqy9hbuRPHcA9xw9dfoPaeYVInG6NCi'
+fetch(`https://api.giphy.com/v1/gifs/search?q=${query}&api_key=${key}`).then(data=>data.json())
+.then(({data})=>
+   {
+     
+const gifs=data.map(gif=>({url:gif.images.original.url}))
+ 
+   setData(gifs)  }
     )
-      .then((resp) => resp.json())
-      .then((data) => {
-        
-        const fetchedGifs = [
-          data.data[0].images.original.url,
-          data.data[1].images.original.url,
-          data.data[2].images.original.url,
-        ];
-        setGifs(fetchedGifs);
-      });
-  }
+},[query])
 
-  // console.log(gifs)
 
-  return (
-    <div>
-      <GifSearch handleSubmit={handleSubmit} />
-      <GifList gifs={gifs} />
-    </div>
-  );
+
+
+    return(
+
+
+<div style={{display:"flex"}}>
+
+<GifList data={data}/>
+<GifSearch onSubmit ={setQuery} />
+
+</div>
+)
 }
-
 export default GifListContainer;
